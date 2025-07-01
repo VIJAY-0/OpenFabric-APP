@@ -1,7 +1,7 @@
-# OpenFabric POWERED text to #D render Generating Agent
+# OpenFabric POWERED text-to-3Drender Generating Agent
 
 
-This repository implements a modular, extensible agent framework that integrates openFabric powered text-to-image and image-to-3dmodel models with  LLMs (like Gemini and Ollama) , memory, content generation, and task processing capabilities. It supports multi-session interactions and acts based on natural language instructions.
+This Projet implements a modular, extensible agent framework that integrates openFabric powered text-to-image and image-to-3dmodel models with  LLMs (like Gemini and Ollama) , memory, content generation, and task processing capabilities. It supports multi-session interactions and acts based on natural language instructions.
 
 ---
 
@@ -89,7 +89,7 @@ npm run dev
  `http://localhost:5173/`
 
 This is how the app looks
-![APP](./AppScreenshot)
+![APP](./AppScreenshot.png)
 
 
 ### 🚀 Request Schema
@@ -123,17 +123,6 @@ This is how the app looks
 - object is a base64 encode image in string format
 - sesion_id is a uuid in string format
 
-
----
-
-## 🚀 Key Features
-
-- ✅ **Session Management**: Create/resume sessions with persistent memory  
-- 🤖 **Pluggable LLMs**: Easily switch between Gemini and Ollama  
-- 🧠 **Semantic Recall**: Retrieve similar past sessions using pgvector  
-- 🖼️ **Image Generation**: Text-to-image via custom generator API  
-- 🖼️ **Model Generation**: Text-to-image-to-Model via custom generator API  
-- 🔧 **Processor FSM**: Declarative command execution via state-based interpretation  
 
 ---
 
