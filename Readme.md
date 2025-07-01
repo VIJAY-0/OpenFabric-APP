@@ -30,8 +30,7 @@ This Projet implements a modular, extensible agent framework that integrates ope
 
 ---
 
-More Details in Documentaion
-
+More Details in [Documentation](./Documentation/)
 
 
 ## 📌 Setup Instructions for project
