@@ -9,6 +9,7 @@ from core.stub import Stub
 from Agent.Agent import Agent
 from Agent.Generator import Generator
 import base64
+import os
 
 
   
@@ -84,6 +85,7 @@ def execute(model: AppModel) -> None:
     Args:
         model (AppModel): The model object containing request and response structures.
     """
+    
     request: InputClass = model.request
     user_prompt = request.prompt
     attachments = request.attachments
@@ -98,8 +100,9 @@ def execute(model: AppModel) -> None:
     
     # agent = Agent('llama3.2:1b',"TEST_USER",session_id ,generator)
     
-    agent = Agent('gemini',"TEST_USER",session_id ,generator)
+    BASE_LLM  = os.environ["BASE_LLM"]
     
+    agent = Agent(BASE_LLM,"TEST_USER",session_id ,generator)
     
     msg , img , obj , sessid  = agent.Exec(user_prompt)
     

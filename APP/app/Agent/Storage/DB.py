@@ -13,10 +13,10 @@ class DB(ABC):
     
     
     @abstractmethod
-    def get_image_description(self,intent,sesion_id):
+    def get_image_description(self,intent,session_id):
         pass
     
     @abstractmethod
-    def get_conversation_history(self,intent,sesion_id):
+    def get_conversation_history(self,intent,session_id):
         pass
 

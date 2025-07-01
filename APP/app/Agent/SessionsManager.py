@@ -1,5 +1,3 @@
-
-from typing import Literal
 import logging
 
 from Agent.LLM.llm import LLM
@@ -18,11 +16,11 @@ class SessionManager:
     
     @classmethod
     def add_session(cls,session_id):
-        if session_id: #LOADING EXISTING SESSION (assumed that the session id is a previous session's session_is)
+        if session_id: #LOADING EXISTING SESSION (assumed that the session_id is a valid previous session's id)
             cls.load_session_history(session_id)
-        else :# NEW SESSION CREATED
-            logging.info("new session ")
+        else :        # NEW SESSION CREATED
             session_id = cls.generate_session_id()
+            logging.info(f"NEW Session initiated : {session_id}")
             cls._sessions[session_id] = [LLM.Message(role='user',content=cls._prompt_manager.get_base_prompt())]
         return session_id
                     
@@ -33,29 +31,34 @@ class SessionManager:
     @classmethod
     def load_session_history(cls,session_id):
         if session_id not in cls._sessions:
-            logging.info("new session form DATABASE")
+            logging.info("loading session form DATABASE")
             cls._sessions[session_id] = cls.get_session_history(session_id=session_id)
             
     @classmethod
     def get_session_history(cls,session_id):
-        
         if session_id in cls._sessions:
-            logging.info("new session FROM MEMORY")
+            if len(cls._sessions[session_id])==1:
+                logging.info("Initiating new session history")
+            else:
+                logging.info("Loading session history from memory")
             return cls._sessions[session_id]
         
-        logging.info("new session FROM DATABASE")
+        logging.info("Loading session history from DATABASE")
         return cls._db.get_conversation_history(session_id=session_id)
     
     @classmethod
     def set_session_history(cls,session_id , history):
+        logging.info(f"session history modified: {session_id}")
         cls._sessions[session_id] =history         
     
     @classmethod
     def save_session(cls,username,session_id , image_desc , summary):
+        logging.info(f"SessionManager:SaveSession {session_id}")
         cls._db.save_session(username=username, session_id=session_id,image_desc=image_desc,history=cls._sessions[session_id],summary=summary)
 
 class SessionData:
     def __init__(self,session_id,username):
+        logging.info(f"SessionData:NewSessionData")
         self.session_id=session_id
         self.username= username
         self.message:str = ""

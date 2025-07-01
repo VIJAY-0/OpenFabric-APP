@@ -1,57 +1,63 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './MessageSender.css'; // Import the CSS
+import './MessageSender.css';
 import ModelViewer from './ModelViewer';
+import Loader from './Loader';
 
 const MessageSender = () => {
   const [inputMsg, setInputMsg] = useState('');
-  const [session_id, setSession_id] = useState('');
-  const [response, setResponse] = useState({ image: '', message: '' , object:''  , session_id:''});
+  const [sessionId, setSessionId] = useState('');
+  const [response, setResponse] = useState({ image: '', message: '', object: '', session_id: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const cleanJSON = (raw) => {
+    try {
+      return JSON.parse(
+        raw
+          .replace(/\{'/g, '{"')
+          .replace(/': '/g, '": "')
+          .replace(/": '/g, '": "')
+          .replace(/': "/g, '": "')
+          .replace(/", '/g, '", "')
+          .replace(/', '/g, '", "')
+          .replace(/', "/g, '", "')
+          .replace(/'}/g, '"}')
+      );
+    } catch (err) {
+      console.error("Failed to parse response:", err);
+      throw new Error('Invalid server response format');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      
       const res = await axios.post('http://localhost:8888/execution', {
-          prompt: inputMsg,
-          attachments:[],
-          session_id:session_id
-        });
+        prompt: inputMsg,
+        attachments: [],
+        session_id: sessionId
+      });
 
-        console.log(res)
-        // const cleaned = res.data.replace(/{'/g, '{"');
-        const cleaned = res.data.replace(/\{'/g, '{"')              // {' → {"
-                                .replace(/': '/g, '": "')           // ': ' → ": "
-                                .replace(/": '/g, '": "')           // ': ' → ": "
-                                .replace(/': "/g, '": "')           // ': ' → ": "
-                                .replace(/", '/g, '", "')           // ', ' → ", "
-                                .replace(/', '/g, '", "')           // ', ' → ", "
-                                .replace(/', "/g, '", "')           // ', ' → ", "
-                                .replace(/'}/g, '"}')              // '} → "}
-                                .replace(/'}/g, '"}')              // '} → "}
-
-        console.log(cleaned)
-        
-        const parsed = JSON.parse(cleaned);
-        setResponse(parsed);
-        setSession_id(parsed.session_id);
-        console.log(parsed);
-        
-
-
+      const parsed = cleanJSON(res.data);
+      setResponse(parsed);
+      setSessionId(parsed.session_id);
     } catch (err) {
       setError('Failed to send message');
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
+    <>
     <div className="msg-container">
+      <div className="heading">
+      <h1>Image and 3D Render Generator</h1>
+      </div>
+
       <form className="msg-form" onSubmit={handleSubmit}>
         <input
           type="text"
@@ -60,46 +66,49 @@ const MessageSender = () => {
           placeholder="Type your message..."
           className="msg-input"
           required
-        />
+          />
         <button type="submit" className="msg-button" disabled={loading}>
           {loading ? 'Sending...' : 'Send'}
         </button>
       </form>
 
+
+      {loading && <div className="msg-loading">{<Loader/>}</div>}
       {error && <div className="msg-error">{error}</div>}
+
 
       {(response.message || response.image) && (
         <div className="msg-response">
-          <h3>{response.session_id}</h3>
-      
-          <h2>{response.message}</h2>
-          {response.image && (
-            <>
-             <img
-                src={`data:image/png;base64,${response.image}`}
-                alt="API response"
-                className="msg-image"
-              />
 
-              <ModelViewer glbBase64={response.object} imageBase64={response.image} />
-              
-                </>
-              )}
+          <h2 className="msg-session-id">{response.session_id}</h2>
+
+          <h2 className="msg-message">{response.message}</h2>
+
+          <div className="msg-display-row">
+
+            <div className="msg-display-row-cont">
+                      {response.image && (
+                        <img
+                        src={`data:image/png;base64,${response.image}`}
+                        alt="Generated"
+                        className="msg-image"
+                        />
+                      )}
+            </div>
+            <div className="msg-display-row-cont">
+                    {response.object && (
+                      <ModelViewer glbBase64={response.object} />
+                    )}
+            </div>
+
+            
+          </div>
         </div>
       )}
-      
+
     </div>
+      </>
   );
 };
 
 export default MessageSender;
-
-
-
-
-
-// i want to replace following at once:
-// {' -> {"
-// '} -> "}
-// ': '  -> ": " 
-// ', ' -> ", "

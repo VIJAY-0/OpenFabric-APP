@@ -1,0 +1,70 @@
+.model-viewer-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border: 1px solid #e5e7eb00;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f8fafc00;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.download-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s ease;
+}
+
+.download-button:hover {
+  background-color: #2563eb;
+}
+
+.model-viewer-title {
+  margin: 0.75rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.download-button:hover {
+  background-color: #2563eb;
+}
+
+.model-viewer-canvas {
+  width: 100%;
+  max-width: 700px;
+  height: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: #1a040400;
+  position: relative;
+}
+
+.model-viewer-title {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  z-index: 1;
+  font-size: 1.25rem;
+  color: #111827;
+}
+
+
+
+
+
+

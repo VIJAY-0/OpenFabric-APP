@@ -7,99 +7,107 @@ from  enum import Enum
 # from Agent.Agent import Agent
 from Agent.Storage.DB import DB
 from Agent.LLM.Gemini import GeminiLLM
+from Agent.LLM.Ollama import OllamaLLM
 from Agent.PromptManager import PromptManager
+
 
 
 class Processor:
     
     class States(Enum):
-        def _generate_next_value_(name, start, count, last_values):
-            return count     
+             
         EXIT=0
         MEM_RECALL = 1
         IMAGE= 2
         MODEL= 3
         QUERY= 4
-        SHOW_HISTORY=5
-        LOAD_HISTORY=6
     
     
-    def __init__(self,session_data,generator , session_manager ,db):
+    def __init__(self,session_data,generator , session_manager ,db ,baseLLM):
         
         self.session_data = session_data
         self.session_manager = session_manager
         self.db:DB = db
-        self.llm = GeminiLLM([])
         self.generator = generator
         self.prompt_mngr = PromptManager()
+        self.llm = self.init_baseLLM(baseLLM)
+        
+    def init_baseLLM(self,baseLLM):    
+        if baseLLM=='gemini':
+            return GeminiLLM([])
+        if 'llama' in self.baseLLM:
+            return OllamaLLM([], MODEL=baseLLM)
+        
         
     def process(self ,llm_response)-> str:
-        resp = preprocess(llm_response)
-        parsed = json.loads(resp)
-        state = self.States((int)(parsed['state']))
+        try:
+            self.State = preprocess(llm_response)
+        except Exception as e:
+            logging.info(f"Processor:ExceptionOccured:{e}")
+            return "WRONG RESPONSE"
+        state = self.States((int)(self.State['state']))
                 
         if state == self.States.EXIT:
-            return self.exit(parsed)
+            return self.exit()
+        
         elif state == self.States.MEM_RECALL:                
-            return self.recall_from_memory(parsed)
+            return self.recall_from_memory()
+        
         elif state == self.States.IMAGE:
-            return self.generate_image(parsed)   
-        elif state == self.States.QUERY:
-            return self.process_query(parsed)
+            return self.generate_image()   
+        
         elif state == self.States.MODEL:
-            return self.generate_model(parsed)
-        # elif state == self.States.SHOW_HISTORY:
-        #     self.show_history(parsed)
-        return "OK"  
+            return self.generate_model()
+        
+        elif state == self.States.QUERY:
+            return self.process_query()
     
 
-    def exit(self,resp:dict):
-        self.session_data.set(summary= resp["summary"])
+    def exit(self):
+        logging.info("Processor:Exiting")
+        self.session_data.set(summary= self.State["summary"])
         return "EXIT"
         
-    def recall_from_memory(self,resp:dict):
+    def recall_from_memory(self):
+        logging.info("Processor:RecallingMemory")
         
-        intent = resp["data"]["intent"]
-        logging.info(f"intent: {intent}")
+        intent = self.State["data"]["intent"]
         refered_image_description=self.db.get_image_description(intent=intent)
         self.session_data.set(image_description=refered_image_description)
-        logging.info(f"image desc: {refered_image_description}")
         return refered_image_description
     
-    # def reload_conversation_history(self,resp:dict):
-    #     intent = resp["data"]["intent"]
-    #     re_prompt = resp["data"]["re_prompt"]
-    #     self.session_data.set(current_prompt=re_prompt)
-    #     hist= self.db.get_conversation_history(intent = intent)
-    #     ### wnated to avoid but is necessary
-    #     Agent._sessionsManager.set_session_history(self.session_data.session_id , hist)
-    #     return "REFRESH"
-    
-    
-    def process_query(self,resp:dict):
-        self.session_data.set(message = resp["query"])
+    def process_query(self):
+        logging.info("Processor:OricesingQuery")
+        self.session_data.set(message = self.State["query"])
         return "EXIT"
     
-    def generate_image(self,prompt:dict):
-        image_intent = prompt['image']
-        logging.info(f"image intent :{image_intent}")
-        image_description = self.llm.generate_content([self.prompt_mngr.get('ImagePrompt') , image_intent])
-        self.session_data.set(image_description=image_description)
-        logging.info(f"image desc :{image_description}")
-        self.session_data.set(IMAGE = self.generator.generate_image(image_description))
-        return "IMAGE GENERATED"
+    def generate_image(self):
+        logging.info("Processor:GeneratingImage")
+        try :
+            image_intent = self.State['image']
+            image_description = self.llm.generate_content([self.prompt_mngr.get('ImagePrompt') , image_intent])
+            
+            self.session_data.set(image_description=image_description)
+            self.session_data.set(IMAGE = self.generator.generate_image(image_description))
+            
+            logging.info("Processor:ImageGenerated")
+            return "IMAGE GENERATED"
+        except Exception as e:
+            logging.info(f"Error in model generation {e}")          
+            return "FAILED"
     
-    def generate_model(self,prompt:dict):
-        return "MODEL GENERATED"
-        self.session_data.set(OBJECT= self.generator.generate_3drender(self.session_data.IMAGE))
+    def generate_model(self):
+        logging.info("Processor:GeneratingModel")
+        try :
+            self.session_data.set(OBJECT= self.generator.generate_3drender(self.session_data.IMAGE))
+            logging.info("Processor:ModelGenerated")
+            return "MODEL GENERATED"
+        except Exception as e:
+            logging.info(f"Eror in model generation {e}")
+            return "FAILED"
     
-    # def show_history(self,prompt:dict):
-    #     hist = self.llm.get_history()
-    #     for message in hist:
-    #         logging.info(message)
-    #         logging.info(" ")
-    #     self.message = str(Agent.sessions[self.session_id])
-    #     return "HISTORY"
+    
+    
 
 
 # utility functions
@@ -118,4 +126,5 @@ def preprocess(resp):
     resp = remove_prefix(resp , "```json")
     resp = remove_suffix(resp , "```\n")
     resp = remove_suffix(resp , "```")    
-    return resp
+    
+    return json.loads(resp)

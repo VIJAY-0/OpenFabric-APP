@@ -29,5 +29,5 @@ COPY . .
 EXPOSE 8888
 
 # Start the Flask app using the start.sh script
-CMD ["sleep", "infinity"]
-# CMD ["sh","start.sh"]
+# CMD ["sleep", "infinity"]
+CMD ["sh","start.sh"]

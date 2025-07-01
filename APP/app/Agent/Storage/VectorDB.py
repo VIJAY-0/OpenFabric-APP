@@ -17,12 +17,15 @@ class VectorDB(DB):
     
     def __init__(self):
         if VectorDB._sessionsStore is None:
+            logging.info("DB:Initialising Sessions Store")
             VectorDB._sessionsStore = SessionsStore()
         if VectorDB._vectorStore is None:
+            logging.info("DB:Initialising Vector Store")
             VectorDB._vectorStore = VectorStore()
             
     @classmethod
-    def get_image_description(cls,intent="",session_id=""):    
+    def get_image_description(cls,intent="",session_id=""):
+        logging.info("DB:GetImageDescription")
         if intent:
             session_id = cls._vectorStore.get_session_id(intent=intent)
         logging.info(f" session id : {session_id}" )
@@ -31,6 +34,7 @@ class VectorDB(DB):
     
     @classmethod
     def get_conversation_history(cls,intent="",session_id=""):
+        logging.info("DB:GetConversationHistory")
         if intent:
             session_id = cls._vectorStore.get_session_id(intent=intent)
         logging.info(f" session id : {session_id}" )
@@ -40,6 +44,7 @@ class VectorDB(DB):
     
     @classmethod
     def save_session(cls,username,session_id,image_desc,history,summary):
+        logging.info("DB:SavingSession")
         cls._sessionsStore.save_session(session_id=session_id,image_description=image_desc,history=history)
         cls._vectorStore.save_session(session_id=session_id ,username = username ,summary=summary)
         
@@ -52,6 +57,8 @@ class SessionsStore:
     
     def __init__(self):
         if SessionsStore._client is None:
+            logging.info("SessionStore:Initialising MongoClient")
+            
             mhost = os.environ["MONGO_HOST_NAME"]
             muser = os.environ["MONGO_INITDB_ROOT_USERNAME"]
             mpass = os.environ["MONGO_INITDB_ROOT_PASSWORD"]
@@ -62,6 +69,7 @@ class SessionsStore:
             
     @classmethod
     def get_session_history(cls,session_id):
+        logging.info("SessionStore:GetSessionHistory")
         collection = cls._db['sessions']
         query = {"_id":session_id}
         document = collection.find_one(query)
@@ -69,6 +77,7 @@ class SessionsStore:
     
     @classmethod
     def get_image_description(cls,session_id):
+        logging.info("SessionStore:GetImageDescription")
         collection = cls._db['sessions']
         query = {"_id":session_id}
         document = collection.find_one(query)
@@ -76,6 +85,7 @@ class SessionsStore:
       
     @classmethod
     def save_session(cls,session_id:str,image_description:str,history:List[Any]):
+        logging.info("SessionStore:SaveSession")
         text = json.dumps(history)
         collection = cls._db['sessions']
         collection.replace_one({"_id": session_id},{"_id":session_id, "history": text,"image_description":image_description}, upsert=True)
@@ -87,6 +97,7 @@ class VectorStore:
     
     def __init__(self):
         if VectorStore._pool is None:
+            logging.info("VectorStore:Initialising Postgress Connection Pool")
             puser = os.environ["POSTGRES_USER"]
             ppass= os.environ["POSTGRES_PASSWORD"]
             pdb = os.environ["POSTGRES_DB"]
@@ -108,6 +119,7 @@ class VectorStore:
     
     @classmethod
     def get_session_id(cls,intent):
+        logging.info("VectorStore:GetSessionID")
         encoder = cls.get_encoder()
         embedding = encoder.encode(intent)  # returns a 384-dim NumPy array
         try: 
@@ -125,6 +137,7 @@ class VectorStore:
     
     @classmethod
     def save_session(cls,session_id,username,summary):
+        logging.info("VectorStore:SaveSession")
         encoder  = cls.get_encoder()
         embedding = encoder.encode(summary)  # returns a 384-dim NumPy array
         try: 
@@ -145,6 +158,7 @@ class VectorStore:
             
     @classmethod
     def init_table(cls):
+        logging.info("VectorStore:InitTable")
         try :
             conn = cls.get_conn()
             cur = conn.cursor()
