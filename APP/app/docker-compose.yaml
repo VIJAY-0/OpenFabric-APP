@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  pgvector-db:
+    image: ankane/pgvector
+    container_name: pgvector-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+    networks:
+      - myapp-net
+
+  mongo-db:
+    image: mongo
+    container_name: mongo-db
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - myapp-net
+
+volumes:
+  pgvector_data:
+  mongo_data:
+
+networks:
+  myapp-net:
+    external: true

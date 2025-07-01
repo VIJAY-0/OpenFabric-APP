@@ -1,0 +1,105 @@
+/* Global styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+}
+
+/* Container card */
+.msg-container {
+  width: 70vw;
+  margin: 80px auto;
+  padding: 30px 40px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Form layout */
+.msg-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+/* Text input */
+.msg-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 14px 18px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: 0.2s ease border;
+}
+
+.msg-input:focus {
+  outline: none;
+  border-color: #4f8ef7;
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.2);
+}
+
+/* Submit button */
+.msg-button {
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background-color: #4f8ef7;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.msg-button:hover:not(:disabled) {
+  background-color: #3c76dd;
+}
+
+.msg-button:disabled {
+  background-color: #9fbdf7;
+  cursor: not-allowed;
+}
+
+/* Error message */
+.msg-error {
+  color: #d32f2f;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+/* Response block */
+.msg-response {
+  margin-top: 30px;
+}
+
+.msg-response h2 {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+/* Image style */
+.msg-image {
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
