@@ -85,7 +85,7 @@ Agent takes a generator object to generae the 2d and 3d content
 
 ### Class: `Processor`
 
-The `Processor` receives the structured response from the LLM, interprets it using a [State Machine Pattern](./"Processor_State_Machine.md"), and executes the required system-level action.
+The `Processor` receives the structured response from the LLM, interprets it using a [State Machine Pattern](./Processor_State_Machine.md), and executes the required system-level action.
 
 #### **States Enum**
 
