@@ -85,7 +85,7 @@ Agent takes a generator object to generae the 2d and 3d content
 
 ### Class: `Processor`
 
-The `Processor` receives the structured response from the LLM, interprets it using a state machine pattern, and executes the required system-level action.
+The `Processor` receives the structured response from the LLM, interprets it using a [State Machine Pattern](./"Processor_State_Machine.md"), and executes the required system-level action.
 
 #### **States Enum**
 
@@ -111,11 +111,11 @@ def __init__(self, session_data, generator, session_manager, db,baseLLM):
 
 - `process(llm_response)` - Entry point. Parses JSON, evaluates `state`, and dispatches handler.
 
-- `exit(resp)` - Finalizes session with summary.
-- `recall_from_memory(resp)` - Retrieves previous session with similar intent.
-- `generate_image(prompt)` - Generates image using LLM + image generator.
-- `generate_model(prompt)` - Placeholder for 3D model support.
-- `process_query(resp)` - Stores user's final query for retrieval.
+- `exit()` - Finalizes session with summary.
+- `recall_from_memory()` - Retrieves previous session with similar intent.
+- `generate_image()` - Generates image using LLM + image generator.
+- `generate_model()` - Placeholder for 3D model support.
+- `process_query()` - Stores user's final query for retrieval.
 
 - `HIGHLY extensible can add more features`.
 ---
@@ -259,10 +259,11 @@ Manages vector-based search and storage in PostgreSQL.
 
 ```text
 User Input → Agent.Exec()
-                ↳ LLM (Gemini/Ollama)
-                ↳ JSON State Response
-                     ↳ Processor.process()
-                        ↳ Action (Generate, Recall, etc)
+                loop:
+                    ↳ UserPrompt/ProcessorResponse→LLM (Gemini/Ollama)
+                        ↳ JSON State Response
+                        ↳ Processor.process()
+                            ↳ Action (Generate, Recall, etc)
                 ↳ Return: (message, image, object, session_id)
 ```
 
