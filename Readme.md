@@ -3,7 +3,7 @@
 
 This Projet implements a modular, extensible agent framework that integrates openFabric powered text-to-image and image-to-3dmodel models with  LLMs (like Gemini and Ollama) , memory, content generation, and task processing capabilities. It supports multi-session interactions and acts based on natural language instructions.
 
-- The Agent Leverages Processor to execute tasks which is based on  [Finite State Machine](./Processor_State_Machine.md) Atchitecture.
+- The Agent Leverages Processor to execute tasks which is based on  [Finite State Machine](./Documentation/Processor_State_Machine.md) Atchitecture.
 ---
 
 ## 🚀 Key Features
