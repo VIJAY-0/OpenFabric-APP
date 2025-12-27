@@ -90,9 +90,8 @@ npm run dev
 
 This is how the app looks
 ![APP](./AppScreenshot.png)
-### Example Run
-[Link text Here](
-https://drive.google.com/file/d/1mvb3_z4KdhSRAK4TMRZNCmh3FZ7SCHjw/view?usp=drive_link)
+### 
+### 🎬 [Example Run](https://drive.google.com/file/d/1mvb3_z4KdhSRAK4TMRZNCmh3FZ7SCHjw/view?usp=drive_link)
 
 ### 🚀 Request Schema
 
